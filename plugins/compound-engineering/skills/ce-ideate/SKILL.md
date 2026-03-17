@@ -76,7 +76,7 @@ Infer two things from the argument:
 - **Volume override** - any hint that changes candidate or survivor counts
 
 Default volume:
-- each ideation sub-agent generates about 10 ideas (yielding 40-60 raw ideas across agents, ~30-50 after dedupe)
+- each ideation sub-agent generates about 7-8 ideas (yielding 30-40 raw ideas across agents, ~20-30 after dedupe)
 - keep the top 5-7 survivors
 
 Honor clear overrides such as:
@@ -89,13 +89,13 @@ Use reasonable interpretation rather than formal parsing.
 
 ### Phase 1: Codebase Scan
 
-Before generating ideas, gather codebase context. This phase should complete in under 2 minutes.
+Before generating ideas, gather codebase context.
 
-Run two agents in parallel:
+Run two agents in parallel in the **foreground** (do not use background dispatch — the results are needed before proceeding):
 
 1. **Quick context scan** — dispatch a general-purpose sub-agent with this prompt:
 
-   > Read the project's CLAUDE.md (or AGENTS.md / README.md if CLAUDE.md is absent), then list the top-level directory structure using the native file-search tool. Return a concise summary (under 30 lines) covering:
+   > Read the project's CLAUDE.md (or AGENTS.md / README.md if CLAUDE.md is absent), then discover the top-level directory layout using the native file-search/glob tool (e.g., `Glob` with pattern `*` or `*/*` in Claude Code). Return a concise summary (under 30 lines) covering:
    > - project shape (language, framework, top-level directory layout)
    > - notable patterns or conventions
    > - obvious pain points or gaps
@@ -121,8 +121,8 @@ Do **not** do external research in v1.
 Follow this mechanism exactly:
 
 1. Generate the full candidate list before critiquing any idea.
-2. Each sub-agent targets about 10 ideas by default. With 4-6 agents this yields 40-60 raw ideas, which merge and dedupe to roughly 30-50 unique candidates. Adjust the per-agent target when volume overrides apply (e.g., "100 ideas" raises it, "top 3" may lower the survivor count instead).
-3. Push past the safe obvious layer. The first 10-15 ideas are often the least interesting.
+2. Each sub-agent targets about 7-8 ideas by default. With 4-6 agents this yields 30-40 raw ideas, which merge and dedupe to roughly 20-30 unique candidates. Adjust the per-agent target when volume overrides apply (e.g., "100 ideas" raises it, "top 3" may lower the survivor count instead).
+3. Push past the safe obvious layer. Each agent's first few ideas tend to be obvious — push past them.
 4. Ground every idea in the Phase 1 scan.
 5. Use this prompting pattern as the backbone:
    - first generate many ideas
@@ -132,7 +132,7 @@ Follow this mechanism exactly:
 7. Give each ideation sub-agent the same:
    - grounding summary
    - focus hint
-   - per-agent volume target (~10 ideas by default)
+   - per-agent volume target (~7-8 ideas by default)
    - instruction to generate raw candidates only, not critique
 8. When using sub-agents, assign each one a different ideation frame as a **starting bias, not a constraint**. Prompt each agent to begin from its assigned perspective but follow any promising thread wherever it leads — cross-cutting ideas that span multiple frames are valuable, not out of scope. Good starting frames:
    - user or operator pain and friction
